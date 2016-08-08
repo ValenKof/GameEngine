@@ -3,6 +3,7 @@
 //
 #include <base/window.h>
 #include <base/matrix.h>
+#include <base/point.h>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
@@ -17,13 +18,18 @@ void RunMainLoop() {
 }
 
 int main() {
-  std::thread event_thread(RunMainLoop);
-  event_thread.join();
+//  std::thread event_thread(RunMainLoop);
+//  event_thread.join();
 
   Matrix<int> a({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
   Matrix<int> b({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
   Matrix<int> c = a + b;
   std::cerr << c << std::endl;
+
+  Point3D x{1, 2, 3};
+  Point3D y{4, 5, 6};
+  Point3D z = x + y;
+  std::cerr << z << std::endl;
 
   return 0;
 }

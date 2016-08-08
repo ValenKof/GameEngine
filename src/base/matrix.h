@@ -3,13 +3,14 @@
 //
 #pragma once
 #include <base/assert.h>
+#include <base/math.h>
 #include <memory>
 #include <iostream>
 
 namespace ge {
 
 template<typename T>
-class Matrix {
+class Matrix : private Scalar<Matrix<T>, T> {
 public:
   Matrix(uint32_t rowsNum, uint32_t colsNum) {
     Init(rowsNum, colsNum);
@@ -43,18 +44,18 @@ public:
     return *this;
   }
 
-  Matrix(const Matrix& matrix) = delete;
+  Matrix(const Matrix& matrix) {
+    (*this) = matrix;
+  }
 
-  Matrix& operator=(const Matrix& matrix) = delete;
-
-  Matrix Clone() const {
-    Matrix clone(m_rowsNum, m_colsNum);
+  Matrix& operator=(const Matrix& matrix) {
+    Init(matrix.m_rowsNum, matrix.m_colsNum);
     for (uint32_t row = 0; row < m_rowsNum; ++row) {
       for (uint32_t col = 0; col < m_colsNum; ++col) {
-        clone(row, col) = (*this)(row, col);
+        (*this)(row, col) = matrix(row, col);
       }
     }
-    return clone;
+    return *this;
   }
 
   T& operator()(uint32_t row, uint32_t col) {
@@ -138,42 +139,10 @@ private:
   std::unique_ptr<T[]> m_data;
 };
 
-template<typename T>
-Matrix<T> operator+(const Matrix<T>& one, const Matrix<T>& other) {
-  Matrix<T> result = one.Clone();
-  result += other;
-  return result;
-}
-
-template<typename T>
-Matrix<T> operator-(const Matrix<T>& one, const Matrix<T>& other) {
-  Matrix<T> result = one.Clone();
-  result -= other;
-  return result;
-}
-
-template<typename T>
-Matrix<T> operator*(const Matrix<T>& one, const T& other) {
-  Matrix<T> result = one.Clone();
-  result *= other;
-  return result;
-}
-
-template<typename T>
-Matrix<T> operator*(const T& one, const Matrix<T>& other) {
-  return other * one;
-}
-
-template<typename T>
-Matrix<T> operator/(const Matrix<T>& one, const T& other) {
-  Matrix<T> result = one.Clone();
-  result /= other;
-  return result;
-}
-
 template <typename T>
 std::ostream& operator<<(std::ostream& ostr, const Matrix<T>& matrix) {
   for (uint32_t row = 0; row < matrix.RowsNum(); ++row) {
+    ostr << '|';
     for (uint32_t col = 0; col < matrix.ColsNum(); ++col) {
       ostr << matrix(row, col) << ' ';
     }
