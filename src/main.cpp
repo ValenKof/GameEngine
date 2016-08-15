@@ -4,6 +4,7 @@
 #include <base/window.h>
 #include <base/matrix.h>
 #include <base/point.h>
+#include <base/transformation.h>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
@@ -28,7 +29,7 @@ int main() {
 
   Point3D x{1, 2, 3};
   Point3D y{4, 5, 6};
-  Point3D z = x + y;
+  Vector3D z = y - x;
   std::cerr << z << std::endl;
 
   return 0;
