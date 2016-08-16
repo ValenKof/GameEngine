@@ -4,151 +4,133 @@
 #pragma once
 #include <base/assert.h>
 #include <base/math.h>
-#include <memory>
+#include <array>
 #include <iostream>
 
 namespace ge {
 
-template<typename T>
-class Matrix : private Scalar<Matrix<T>, T> {
-public:
-  Matrix(uint32_t rowsNum, uint32_t colsNum) {
-    Init(rowsNum, colsNum);
+#define FOR_EACH_CELL(cmd)             \
+  for (uint32_t r = 0; r < R; ++r) {   \
+    for (uint32_t c = 0; c < C; ++c) { \
+      cmd;                             \
+    }                                  \
+  }                                    \
+
+
+template <typename T, uint32_t R = 4, uint32_t C = 4>
+struct BasicMatrix {
+  BasicMatrix() {}
+
+  void Fill(T value)
+  { FOR_EACH_CELL(data[r][c] = value); }
+
+  void Clear()
+  { Fill(static_cast<T>(0)); }
+
+  T& operator()(uint32_t r, uint32_t c)
+  {
+    ASSERT(0 <= r && r < R);
+    ASSERT(0 <= c && c < C);
+    return data[r][c];
   }
 
-  Matrix() {
-    Init(0, 0);
+  const T operator()(uint32_t r, uint32_t c) const
+  {
+    ASSERT(0 <= r && r < R);
+    ASSERT(0 <= c && c < C);
+    return data[r][c];
   }
 
-  Matrix(std::initializer_list<std::initializer_list<T>> list) {
-    Init(list.size(), list.size() > 0 ? list.size() : 0);
-    for (uint32_t row = 0; row < m_rowsNum; ++row) {
-      std::initializer_list<T> sublist = *std::next(list.begin(), row);
-      ASSERT(sublist.size() == m_colsNum);
-      for (uint32_t col = 0; col < m_colsNum; ++col) {
-        (*this)(row, col) = *std::next(sublist.begin(), col);
-      }
-    }
+  const BasicMatrix<T, C, R> Transposed() const
+  {
+    BasicMatrix<T, C, R> result;
+    FOR_EACH_CELL(result(c, r) = (*this)(r, c));
+    return result;
   }
 
-  Matrix(Matrix&& matrix) noexcept {
-    (*this) = std::move(matrix);
-  }
-
-  Matrix& operator=(Matrix&& matrix) noexcept {
-    m_rowsNum = matrix.m_rowsNum;
-    matrix.m_rowsNum = 0;
-    m_colsNum = matrix.m_colsNum;
-    matrix.m_colsNum = 0;
-    m_data = std::move(matrix.m_data);
-    return *this;
-  }
-
-  Matrix(const Matrix& matrix) {
-    (*this) = matrix;
-  }
-
-  Matrix& operator=(const Matrix& matrix) {
-    Init(matrix.m_rowsNum, matrix.m_colsNum);
-    for (uint32_t row = 0; row < m_rowsNum; ++row) {
-      for (uint32_t col = 0; col < m_colsNum; ++col) {
-        (*this)(row, col) = matrix(row, col);
-      }
-    }
-    return *this;
-  }
-
-  T& operator()(uint32_t row, uint32_t col) {
-    ASSERT(0 <= row && row < m_rowsNum);
-    ASSERT(0 <= col && col < m_colsNum);
-    return m_data[row * m_colsNum + col];
-  }
-
-  const T& operator()(uint32_t row, uint32_t col) const {
-    ASSERT(0 <= row && row < m_rowsNum);
-    ASSERT(0 <= col && col < m_colsNum);
-    return m_data[row * m_colsNum + col];
-  }
-
-  Matrix& operator+=(const Matrix& other) {
-    ASSERT(m_rowsNum == other.m_rowsNum);
-    ASSERT(m_colsNum == other.m_colsNum);
-    for (uint32_t row = 0; row < m_rowsNum; ++row) {
-      for (uint32_t col = 0; col < m_colsNum; ++col) {
-        (*this)(row, col) += other(row, col);
-      }
-    }
-    return *this;
-  }
-
-  Matrix& operator-=(const Matrix& other) {
-    ASSERT(m_rowsNum == other.m_rowsNum);
-    ASSERT(m_colsNum == other.m_colsNum);
-    for (uint32_t row = 0; row < m_rowsNum; ++row) {
-      for (uint32_t col = 0; col < m_colsNum; ++col) {
-        (*this)(row, col) -= other(row, col);
-      }
-    }
-    return *this;
-  }
-
-  Matrix& operator*=(const T& other) {
-    for (uint32_t row = 0; row < m_rowsNum; ++row) {
-      for (uint32_t col = 0; col < m_colsNum; ++col) {
-        (*this)(row, col) *= other;
-      }
-    }
-    return *this;
-  }
-
-  Matrix& operator/=(const T& other) {
-    for (uint32_t row = 0; row < m_rowsNum; ++row) {
-      for (uint32_t col = 0; col < m_colsNum; ++col) {
-        (*this)(row, col) /= other;
-      }
-    }
-    return *this;
-  }
-
-  bool Empty() const {
-    return m_rowsNum == 0 || m_colsNum == 0;
-  }
-
-  uint32_t RowsNum() const {
-    return m_rowsNum;
-  }
-
-  uint32_t ColsNum() const {
-    return m_colsNum;
-  }
-
-private:
-  void Init(uint32_t rowsNum, uint32_t colsNum) {
-    ASSERT((rowsNum == 0) == (colsNum == 0));
-    m_rowsNum = rowsNum;
-    m_colsNum = colsNum;
-    if (!Empty()) {
-      m_data = std::make_unique<T[]>(m_rowsNum * m_colsNum);
-    } else {
-      m_data = nullptr;
-    }
-  }
-
-  uint32_t m_rowsNum;
-  uint32_t m_colsNum;
-  std::unique_ptr<T[]> m_data;
+  std::array<std::array<T, C>, R> data;
 };
 
+using Matrix = BasicMatrix<float>;
+
 template <typename T>
-std::ostream& operator<<(std::ostream& ostr, const Matrix<T>& matrix) {
-  for (uint32_t row = 0; row < matrix.RowsNum(); ++row) {
+using BasicRow = BasicMatrix<T, 1, 4>;
+
+using Row = BasicRow<float>;
+
+template <typename T>
+using BasicColumn = BasicMatrix<T, 4, 1>;
+
+using Column = BasicColumn<float>;
+
+template <typename T, uint32_t N = 4>
+BasicMatrix<T, N, N> BasicIdentity()
+{
+  BasicMatrix<T, N, N> result;
+  result.Clear();
+  for (uint32_t i = 0; i < N; ++i) {
+    result(i, i) = 1;
+  }
+  return result;
+}
+
+template <typename T, uint32_t N = 4>
+BasicMatrix<T, N, N> BasicZeroes()
+{
+  BasicMatrix<T, N, N> result;
+  result.Clear();
+  return result;
+}
+
+template <typename T, uint32_t R, uint32_t C>
+const BasicMatrix<T, R, C> operator+(
+    const BasicMatrix<T, R, C>& lhs,
+    const BasicMatrix<T, R, C>& rhs)
+{
+  BasicMatrix<T, R, C> result;
+  FOR_EACH_CELL(result(r, c) = lhs(r, c) + rhs(r, c));
+  return result;
+}
+
+template <typename T, uint32_t R, uint32_t C>
+const BasicMatrix<T, R, C> operator-(
+    const BasicMatrix<T, R, C>& lhs,
+    const BasicMatrix<T, R, C>& rhs)
+{
+  BasicMatrix<T, R, C> result;
+  FOR_EACH_CELL(result(r, c) = lhs(r, c) - rhs(r, c));
+  return result;
+}
+
+template <typename T, uint32_t R, uint32_t N, uint32_t C>
+const BasicMatrix<T, R, C> operator*(
+    const BasicMatrix<T, R, N>& lhs,
+    const BasicMatrix<T, N, C>& rhs)
+{
+  BasicMatrix<T, R, C> result;
+  FOR_EACH_CELL(
+      T sum = 0;
+      for (uint32_t i = 0; i < N; ++i) {
+        sum += lhs(r, i) * rhs(i, c);
+      }
+      result(r, c) = sum
+  );
+  return result;
+}
+
+template <typename T, uint32_t R, uint32_t C>
+std::ostream& operator<<(std::ostream& ostr, const BasicMatrix<T, R, C>& matrix)
+{
+  for (uint32_t r = 0; r < R; ++r) {
     ostr << '|';
-    for (uint32_t col = 0; col < matrix.ColsNum(); ++col) {
-      ostr << matrix(row, col) << ' ';
+    for (uint32_t c = 0; c < C; ++c) {
+      ostr << matrix(r, c) << ' ';
     }
     ostr << '\n';
   }
   return ostr;
 }
+
+#undef FOR_EACH_CELL
 
 }  // namespace ge

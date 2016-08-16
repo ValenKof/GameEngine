@@ -9,58 +9,91 @@
 
 namespace ge {
 
-struct Point3D {
-  Point3D() {}
-  Point3D(double x, double y, double z) : x(x), y(y), z(z) {}
+template <typename T>
+struct BasicPoint3D {
+  BasicPoint3D() {}
+  BasicPoint3D(T x, T y, T z) : x(x), y(y), z(z) {}
 
-  Matrix<double> ToRowVector() const
-  { return {{x, y, z, 1}}; }
+  BasicRow<T> ToRowVector() const
+  {
+    BasicRow<T> result;
+    result(0, 0) = x;
+    result(0, 1) = y;
+    result(0, 2) = z;
+    result(0, 3) = static_cast<T>(1);
+    return result;
+  }
 
-  double x;
-  double y;
-  double z;
+  BasicColumn<T> ToColumnVector() const
+  { return ToRowVector().Transposed(); }
+
+  T x;
+  T y;
+  T z;
 };
 
-inline std::ostream& operator<<(std::ostream& ostr, const Point3D& p)
+template <typename T>
+inline std::ostream& operator<<(std::ostream& ostr, const BasicPoint3D<T>& p)
 { return ostr << '(' << p.x << ',' << p.y << ',' << p.z << ')'; }
 
-struct Vector3D {
-  Vector3D() {}
-  Vector3D(double x, double y, double z) : x(x), y(y), z(z) {}
+using Point3D = BasicPoint3D<float>;
 
-  double DotProduct(const Vector3D& v) const
+template <typename T>
+struct BasicVector3D {
+  BasicVector3D() {}
+  BasicVector3D(T x, T y, T z) : x(x), y(y), z(z) {}
+
+  T DotProduct(const BasicVector3D& v) const
   { return x * v.x + y * v.y + z * v.z; }
 
-  double SquaredLength() const
+  T SquaredLength() const
   { return DotProduct(*this); }
 
-  double Length() const
+  T Length() const
   { return sqrt(SquaredLength()); }
 
-  Matrix<double> ToRowVector() const
-  { return {{x, y, z, 0}}; }
+  BasicRow<T> ToRowVector() const
+  {
+    BasicRow<T> result;
+    result(0, 0) = x;
+    result(0, 1) = y;
+    result(0, 2) = z;
+    result(0, 3) = static_cast<T>(0);
+    return result;
+  }
 
-  double x;
-  double y;
-  double z;
+  BasicColumn<T> ToColumnVector() const
+  { return ToRowVector().Transposed(); }
+
+  T x;
+  T y;
+  T z;
 };
 
-inline std::ostream& operator<<(std::ostream& ostr, const Vector3D& v)
+template <typename T>
+inline std::ostream& operator<<(std::ostream& ostr, const BasicVector3D<T>& v)
 { return ostr << '[' << v.x << ',' << v.y << ',' << v.z << ']'; }
 
-inline Vector3D operator-(const Point3D& a, const Point3D& b)
+using Vector3D = BasicVector3D<float>;
+
+template <typename T>
+inline BasicVector3D<T> operator-(const BasicPoint3D<T>& a, const BasicPoint3D<T>& b)
 { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
 
-inline Point3D operator+(const Point3D& a, const Vector3D& b)
+template <typename T>
+inline BasicPoint3D<T> operator+(const BasicPoint3D<T>& a, const BasicVector3D<T>& b)
 { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 
-inline Point3D operator+(const Vector3D& a, const Point3D& b)
+template <typename T>
+inline BasicPoint3D<T> operator+(const BasicVector3D<T>& a, const BasicPoint3D<T>& b)
 { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 
-inline Vector3D operator+(const Vector3D& a, const Vector3D& b)
+template <typename T>
+inline BasicVector3D<T> operator+(const BasicVector3D<T>& a, const BasicVector3D<T>& b)
 { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
 
-inline Vector3D operator-(const Vector3D& a, const Vector3D& b)
+template <typename T>
+inline BasicVector3D<T> operator-(const BasicVector3D<T>& a, const BasicVector3D<T>& b)
 { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
 
 }  // namespace ge

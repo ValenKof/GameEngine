@@ -3,12 +3,28 @@
 
 namespace ge {
 
-struct Transformation {
-  static Matrix<double> Translate(double dx, double dy, double dz)
-  { return {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {dx, dy, dz, 1}}; }
+template <typename T>
+struct BasicTransformation {
+  static BasicMatrix<T> Translate(T dx, T dy, T dz)
+  {
+    BasicMatrix<T> result = BasicIdentity<T>();
+    result(3, 0) = dx;
+    result(3, 1) = dy;
+    result(3, 2) = dz;
+    return result;
+  }
 
-  static Matrix<double> Scale(double f)
-  { return {{f, 0, 0, 0}, {0, f, 0, 0}, {0, 0, f, 0}, {0, 0, 0, 1}}; }
+  static BasicMatrix<T> Scale(T f)
+  {
+    BasicMatrix<T> result = BasicZeroes<T>();
+    result(0, 0) = f;
+    result(1, 1) = f;
+    result(2, 2) = f;
+    result(3, 3) = static_cast<T>(1);
+    return result;
+  }
 };
+
+using Transformation = BasicTransformation<float>;
 
 }  // namespace ge

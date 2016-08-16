@@ -22,15 +22,11 @@ int main() {
 //  std::thread event_thread(RunMainLoop);
 //  event_thread.join();
 
-  Matrix<int> a({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
-  Matrix<int> b({{1, 0, 0}, {0, 1, 0}, {0, 0, 1}});
-  Matrix<int> c = a + b;
-  std::cerr << c << std::endl;
-
   Point3D x{1, 2, 3};
   Point3D y{4, 5, 6};
-  Vector3D z = y - x;
-  std::cerr << z << std::endl;
+  Row m = (Point3D{0, 0, 0} + (y - x)).ToRowVector() * Transformation::Translate(1, 1, 1);
+  std::cerr << m << std::endl;
+
 
   return 0;
 }
