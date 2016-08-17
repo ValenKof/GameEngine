@@ -2,6 +2,22 @@
 #include <base/matrix.h>
 
 namespace ge {
+namespace impl {
+
+template <typename T>
+BasicMatrix<T> RotateImpl(T angle, uint32_t x, uint32_t y)
+{
+  const T sina = sin(angle);
+  const T cosa = cos(angle);
+  BasicMatrix<T> result = BasicIdentity<T>();
+  result(x, x) = +cosa;
+  result(x, y) = -sina;
+  result(y, x) = +sina;
+  result(y, y) = +cosa;
+  return result;
+}
+
+}  // namespace impl
 
 template <typename T>
 struct BasicTransformation {
@@ -23,6 +39,15 @@ struct BasicTransformation {
     result(3, 3) = static_cast<T>(1);
     return result;
   }
+
+  static BasicMatrix<T> RotateAboutX(T angle)
+  { return impl::RotateImpl(angle, 1, 2); }
+
+  static BasicMatrix<T> RotateAboutY(T angle)
+  { return impl::RotateImpl(angle, 2, 0); }
+
+  static BasicMatrix<T> RotateAboutZ(T angle)
+  { return impl::RotateImpl(angle, 0, 1); }
 };
 
 using Transformation = BasicTransformation<float>;
