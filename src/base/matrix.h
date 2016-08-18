@@ -17,6 +17,12 @@ namespace ge {
   }                                    \
 
 
+template <typename T, uint32_t R, uint32_t C>
+struct BasicMatrix;
+
+template <typename T, uint32_t N>
+BasicMatrix<T, N, N> BasicIdentity();
+
 template <typename T, uint32_t R = 4, uint32_t C = 4>
 struct BasicMatrix {
   BasicMatrix() {}
@@ -45,6 +51,38 @@ struct BasicMatrix {
   {
     BasicMatrix<T, C, R> result;
     FOR_EACH_CELL(result(c, r) = (*this)(r, c));
+    return result;
+  }
+
+  const BasicMatrix<T, R, C> Inversed() const
+  {
+    ASSERT(R == C);
+    BasicMatrix<T, R, C> self = *this;
+    BasicMatrix<T, R, C> result = BasicIdentity<T, R>();
+    for (uint32_t i = 0; i < R; ++i) {
+      uint32_t best_row = i;
+      for (uint32_t j = i + 1; j < R; ++j) {
+        if (abs(self(j, i)) > abs(self(best_row, i))) {
+          best_row = j;
+        }
+      }
+      T divisor = self(best_row, i);
+      for (uint32_t j = 0; j < C; ++j) {
+        swap(self(i, j), self(best_row, j));
+        swap(result(i, j), result(best_row, j));
+        self(i, j) /= divisor;
+        result(i, j) /= divisor;
+      }
+      for (uint32_t other = 0; other < R; ++other) {
+        if (other != i) {
+          T multiplier = self(other, i);
+          for (uint32_t j = 0; j < C; ++j) {
+            self(other, j) -= multiplier * self(i, j);
+            result(other, j) -= multiplier * result(i, j);
+          }
+        }
+      }
+    }
     return result;
   }
 
