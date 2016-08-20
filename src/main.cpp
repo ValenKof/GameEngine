@@ -5,6 +5,7 @@
 #include <base/matrix.h>
 #include <base/point.h>
 #include <base/transformation.h>
+#include <base/mesh.h>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>

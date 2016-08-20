@@ -24,8 +24,11 @@ struct BasicPoint3D {
     return result;
   }
 
-  BasicColumn<T> ToColumnVector() const
-  { return ToRowVector().Transposed(); }
+  static BasicPoint3D FromRowVector(BasicRow<T> row)
+  { return {row(0, 0) / row(0, 3), row(0, 1) / row(0, 3), row(0, 2) / row(0, 3)}; }
+
+//  BasicColumn<T> ToColumnVector() const
+//  { return ToRowVector().Transposed(); }
 
   T x;
   T y;
@@ -62,8 +65,11 @@ struct BasicVector3D {
     return result;
   }
 
-  BasicColumn<T> ToColumnVector() const
-  { return ToRowVector().Transposed(); }
+  static BasicVector3D FromRowVector(BasicRow<T> row)
+  { return {row(0, 0), row(0, 1), row(0, 2)}; }
+
+//  BasicColumn<T> ToColumnVector() const
+//  { return ToRowVector().Transposed(); }
 
   T x;
   T y;
