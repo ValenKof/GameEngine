@@ -49,6 +49,9 @@ struct BasicVector3D {
   T DotProduct(const BasicVector3D& v) const
   { return x * v.x + y * v.y + z * v.z; }
 
+  BasicVector3D CrossProduct(const BasicVector3D& v) const
+  { return {y * v.z - z * v.y, z * v.x - x * v.z, x * v.y - y * v.x}; }
+
   T SquaredLength() const
   { return DotProduct(*this); }
 

@@ -112,4 +112,14 @@ void XWindow::DrawRectangle(int x, int y, size_t width, size_t height)
 void XWindow::FillRectangle(int x, int y, size_t width, size_t height)
 { XFillRectangle(m_pDisplay, m_window, m_gc, x, y, width, height); }
 
+void XWindow::FillPolygon(int x1, int y1, int x2, int y2, int x3, int y3)
+{
+  XPoint points[3]{
+    {static_cast<short>(x1), static_cast<short>(y1)},
+    {static_cast<short>(x2), static_cast<short>(y2)},
+    {static_cast<short>(x3), static_cast<short>(y3)}
+  };
+  XFillPolygon(m_pDisplay, m_window, m_gc, points, 3, Convex, CoordModeOrigin);
+}
+
 }  // namespace ge

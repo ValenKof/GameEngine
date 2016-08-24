@@ -17,23 +17,29 @@ using namespace ge;
 class MyGame : public XWindow {
 public:
   MyGame() : XWindow(800, 600), m_index(0)
-  {}
+  {
+    cube_.LoadTxt("../meshes/cube.txt");
+    cube_.Transform(Transformation::Scale(100));
+  }
 
 protected:
   void ButtonPressed(int x, int y) override
   {
     m_xs[m_index] = x;
     m_ys[m_index] = y;
-    m_index = (m_index + 1) % 2;
+    m_index = (m_index + 1) % 3;
     if (m_index == 0) {
-      FillRectangle(m_xs[0], m_ys[0], m_xs[1] - m_xs[0], m_ys[1] - m_ys[0]);
+      FillPolygon(m_xs[0], m_ys[0], m_xs[1], m_ys[1], m_xs[2], m_ys[2]);
     }
+
+    DrawMesh(cube_);
   }
 
 private:
   size_t m_index;
-  std::array<int, 2> m_xs;
-  std::array<int, 2> m_ys;
+  std::array<int, 3> m_xs;
+  std::array<int, 3> m_ys;
+  Mesh cube_;
 };
 
 void RunMainLoop() {

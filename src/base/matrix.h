@@ -6,6 +6,9 @@
 #include <base/math.h>
 #include <array>
 #include <iostream>
+#include <cmath>
+#include <algorithm>
+#include <cstdlib>
 
 namespace ge {
 
@@ -62,14 +65,14 @@ struct BasicMatrix {
     for (uint32_t i = 0; i < R; ++i) {
       uint32_t best_row = i;
       for (uint32_t j = i + 1; j < R; ++j) {
-        if (abs(self(j, i)) > abs(self(best_row, i))) {
+        if (ge::abs<T>(self(j, i)) > ge::abs<T>(self(best_row, i))) {
           best_row = j;
         }
       }
       T divisor = self(best_row, i);
       for (uint32_t j = 0; j < C; ++j) {
-        swap(self(i, j), self(best_row, j));
-        swap(result(i, j), result(best_row, j));
+        std::swap(self(i, j), self(best_row, j));
+        std::swap(result(i, j), result(best_row, j));
         self(i, j) /= divisor;
         result(i, j) /= divisor;
       }
