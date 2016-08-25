@@ -1,8 +1,9 @@
 //
 // Created by Valentin Kofman on 05/08/16.
 //
-#include "base/window.h"
+#include <base/window.h>
 #include <base/color.h>
+#include <base/time.h>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -17,6 +18,18 @@ XWindow::XWindow(size_t width, size_t height)
 
 XWindow::~XWindow()
 { CloseWindow(); }
+
+int64_t XWindow::FramesPerSecond()
+{ return 30; }
+
+int64_t XWindow::TicksPerFrame()
+{ return TicksPerSecond() / FramesPerSecond(); }
+
+int64_t XWindow::UpdatesPerSecond()
+{ return 10; }
+
+int64_t XWindow::TicksPerUpdate()
+{ return TicksPerSecond() / UpdatesPerSecond(); }
 
 void XWindow::InitWindow()
 {
@@ -67,18 +80,44 @@ void XWindow::Clear()
 
 void XWindow::Start()
 {
-  XEvent event; // the XEvent declaration !!!
-  KeySym key; // a dealie-bob to handle KeyPress Events
-  char text[255]; // a char buffer for KeyPress Events
-  /* look for events forever... */
+  int64_t previous = Ticks();
+  int64_t updateLag = 0;
+  int64_t renderLag = 0;
   while (!m_asked_to_stop) {
-    /* get the next event and stuff it into our event variable.
-       Note:  only events we set the mask for are detected!
-    */
-    XNextEvent(m_pDisplay, &event);
+    int64_t current = Ticks();
+    int64_t elapsed = current - previous;
+    previous = current;
+    updateLag += elapsed;
+    renderLag += elapsed;
+    int64_t wait_time = std::min(TicksPerFrame() - renderLag, TicksPerUpdate() - updateLag);
+    if (wait_time > 0) {
+      int64_t wait_started = Ticks();
+      while (Ticks() < wait_started + wait_time) {
+        // active waiting
+      }
+    }
+    while (updateLag >= TicksPerUpdate()) {
+      Update();
+      updateLag -= TicksPerUpdate();
+    }
+    if (renderLag >= TicksPerFrame()) {
+      Render(1.0 * updateLag / TicksPerUpdate());
+      XFlush(m_pDisplay);
+      renderLag = 0;
+    }
+  }
+}
 
+void XWindow::Stop()
+{ m_asked_to_stop = true; }
+
+void XWindow::Update()
+{
+  XEvent event;
+  KeySym key;
+  char text[255];
+  if (XCheckMaskEvent(m_pDisplay, ExposureMask | ButtonPressMask | KeyPressMask, &event)) {
     if (event.type == Expose && event.xexpose.count == 0) {
-      /* the window was exposed redraw it! */
       Clear();
     }
     if (event.type == KeyPress && XLookupString(&event.xkey, text, sizeof(text), &key, 0) == 1) {
@@ -93,9 +132,6 @@ void XWindow::Start()
     }
   }
 }
-
-void XWindow::Stop()
-{ m_asked_to_stop = true; }
 
 void XWindow::SetForeground(Color color)
 { XSetForeground(m_pDisplay, m_gc, color.Rgb()); }

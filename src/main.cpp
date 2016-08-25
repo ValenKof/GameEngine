@@ -25,11 +25,15 @@ public:
     m_tranform_in_world = Transformation::Identity();
   }
 
+  void Render(float t) override
+  {
+    DrawCube();
+  }
+
 protected:
   void ButtonPressed(int x, int y) override
   {
     m_tranform_in_world = Transformation::Translate(x, y, 0);
-    DrawCube();
   }
 
   void KeyPressed(char c) override
@@ -44,8 +48,6 @@ protected:
 
     double angle = (c == 'r' ? 1.0 : 0.0);
     m_tranform_in_model = m_tranform_in_model * Transformation::Rotate(angle, angle, angle);
-
-    DrawCube();
   }
 
 private:

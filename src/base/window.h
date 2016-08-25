@@ -16,11 +16,19 @@ public:
   XWindow(size_t width, size_t height);
   ~XWindow();
 
+  int64_t FramesPerSecond();
+  int64_t TicksPerFrame();
+  int64_t UpdatesPerSecond();
+  int64_t TicksPerUpdate();
+
   void InitWindow();
   void CloseWindow();
   void Clear();
   void Start();
   void Stop();
+
+  void Update();
+  virtual void Render(float t) = 0;
 
   void SetForeground(Color color);
   void SetBackground(Color color);
