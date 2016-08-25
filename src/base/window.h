@@ -44,8 +44,12 @@ public:
   template <typename T>
   void DrawMesh(const BasicMesh<T>& mesh)
   {
+    srand(0);
     for (size_t i = 0; i < mesh.PolygonsNumber(); ++i) {
-      FillPolygon(mesh.GetPolygon(i));
+      SetForeground(Color::Random());
+      if (mesh.IsVisible(i)) {
+        FillPolygon(mesh.GetPolygon(i));
+      }
     }
   }
 

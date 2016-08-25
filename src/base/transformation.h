@@ -51,6 +51,9 @@ struct BasicTransformation {
 
   static BasicMatrix<T> RotateAboutZ(T angle)
   { return impl::RotateImpl(angle, 0, 1); }
+
+  static BasicMatrix<T> Rotate(T x, T y, T z)
+  { return RotateAboutX(x) * RotateAboutY(y) * RotateAboutZ(z); }
 };
 
 using Transformation = BasicTransformation<float>;

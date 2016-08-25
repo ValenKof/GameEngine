@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <cstdint>
+#include <cstdlib>
 
 namespace ge {
 
@@ -23,6 +24,10 @@ public:
 
   static constexpr Color FromRgb(uint32_t rgb) {
     return Color{rgb};
+  }
+
+  static Color Random() {
+    return FromRgb(rand() & 0xFF, rand() & 0xFF, rand() & 0xFF);
   }
 
   constexpr uint32_t Rgb() const { return m_rgb; }

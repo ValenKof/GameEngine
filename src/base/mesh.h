@@ -34,7 +34,7 @@ public:
     for (const auto& polygon : m_polygons) {
       auto p = m_points[polygon[1]] - m_points[polygon[0]];
       auto q = m_points[polygon[2]] - m_points[polygon[0]];
-      m_normals.push_back(p.CrossProduct(q));
+      m_normals.push_back(q.CrossProduct(p));
     }
   }
 
@@ -62,6 +62,9 @@ public:
     const auto& polygon = m_polygons[index];
     return {{m_points[polygon[0]], m_points[polygon[1]], m_points[polygon[2]]}};
   }
+
+  bool IsVisible(size_t index) const
+  { return m_normals[index].z > 0; }
 
   size_t PolygonsNumber() const
   { return m_polygons.size(); }
