@@ -98,6 +98,7 @@ void XWindow::Start()
     }
     while (updateLag >= TicksPerUpdate()) {
       Update();
+      HandleInput();
       updateLag -= TicksPerUpdate();
     }
     if (renderLag >= TicksPerFrame()) {
@@ -111,7 +112,7 @@ void XWindow::Start()
 void XWindow::Stop()
 { m_asked_to_stop = true; }
 
-void XWindow::Update()
+void XWindow::HandleInput()
 {
   XEvent event;
   KeySym key;

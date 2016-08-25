@@ -20,20 +20,32 @@ public:
   {
     m_cube.LoadTxt("../meshes/cube.txt");
 
-    m_tranform_in_model = Transformation::Scale(100);
+    m_transform_in_model = Transformation::Scale(100);
     m_model_to_world = Transformation::Identity();
-    m_tranform_in_world = Transformation::Identity();
-  }
-
-  void Render(float t) override
-  {
-    DrawCube();
+    m_current_transform_in_world = Transformation::Identity();
+    m_next_transform_in_world = Transformation::Identity();
   }
 
 protected:
+  void Render(float t) override
+  {
+    Matrix transform_in_world = m_current_transform_in_world +
+        (m_next_transform_in_world - m_current_transform_in_world) * t;
+    Matrix result = m_transform_in_model * m_model_to_world * transform_in_world;
+    Clear();
+    Mesh cube_in_camera = m_cube.Transformed(result);
+    DrawMesh(cube_in_camera);
+  }
+
+  void Update() override
+  {
+    m_current_transform_in_world = m_next_transform_in_world;
+  }
+
   void ButtonPressed(int x, int y) override
   {
-    m_tranform_in_world = Transformation::Translate(x, y, 0);
+    m_current_transform_in_world = Transformation::Translate(x, y, 0);
+    m_next_transform_in_world = Transformation::Translate(x, y, 0);
   }
 
   void KeyPressed(char c) override
@@ -42,28 +54,22 @@ protected:
       Stop();
     }
 
-    int dx = (c == 'a' ? -1 : (c == 'd' ? +1 : 0));
-    int dy = (c == 's' ? -1 : (c == 'w' ? +1 : 0));
-    m_tranform_in_world = m_tranform_in_world * Transformation::Translate(dx, dy, 0);
+    int dx = (c == 'a' ? -10 : (c == 'd' ? +10 : 0));
+    int dy = (c == 's' ? -10 : (c == 'w' ? +10 : 0));
+    m_next_transform_in_world =
+        m_current_transform_in_world * Transformation::Translate(dx, dy, 0);
 
     double angle = (c == 'r' ? 1.0 : 0.0);
-    m_tranform_in_model = m_tranform_in_model * Transformation::Rotate(angle, angle, angle);
+    m_transform_in_model = m_transform_in_model * Transformation::Rotate(angle, angle, angle);
   }
 
 private:
-  void DrawCube()
-  {
-    Matrix result = m_tranform_in_model * m_model_to_world * m_tranform_in_world;
-    Clear();
-    Mesh cube_in_camera = m_cube.Transformed(result);
-    DrawMesh(cube_in_camera);
-  }
-
   Mesh m_cube;
 
-  Matrix m_tranform_in_model;
+  Matrix m_transform_in_model;
   Matrix m_model_to_world;
-  Matrix m_tranform_in_world;
+  Matrix m_current_transform_in_world;
+  Matrix m_next_transform_in_world;
 };
 
 void RunMainLoop()

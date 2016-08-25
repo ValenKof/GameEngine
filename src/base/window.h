@@ -27,8 +27,7 @@ public:
   void Start();
   void Stop();
 
-  void Update();
-  virtual void Render(float t) = 0;
+  void HandleInput();
 
   void SetForeground(Color color);
   void SetBackground(Color color);
@@ -62,6 +61,8 @@ public:
   }
 
 protected:
+  virtual void Update() = 0;
+  virtual void Render(float t) = 0;
   virtual void ButtonPressed(int x, int y) = 0;
   virtual void KeyPressed(char c) = 0;
 

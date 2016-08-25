@@ -124,7 +124,7 @@ BasicMatrix<T, N, N> BasicZeroes()
 }
 
 template <typename T, uint32_t R, uint32_t C>
-const BasicMatrix<T, R, C> operator+(
+BasicMatrix<T, R, C> operator+(
     const BasicMatrix<T, R, C>& lhs,
     const BasicMatrix<T, R, C>& rhs)
 {
@@ -134,7 +134,7 @@ const BasicMatrix<T, R, C> operator+(
 }
 
 template <typename T, uint32_t R, uint32_t C>
-const BasicMatrix<T, R, C> operator-(
+BasicMatrix<T, R, C> operator-(
     const BasicMatrix<T, R, C>& lhs,
     const BasicMatrix<T, R, C>& rhs)
 {
@@ -144,7 +144,7 @@ const BasicMatrix<T, R, C> operator-(
 }
 
 template <typename T, uint32_t R, uint32_t N, uint32_t C>
-const BasicMatrix<T, R, C> operator*(
+BasicMatrix<T, R, C> operator*(
     const BasicMatrix<T, R, N>& lhs,
     const BasicMatrix<T, N, C>& rhs)
 {
@@ -158,6 +158,18 @@ const BasicMatrix<T, R, C> operator*(
   );
   return result;
 }
+
+template <typename T, uint32_t R, uint32_t C>
+BasicMatrix<T, R, C> operator*(const BasicMatrix<T, R, C>& lhs, T rhs)
+{
+  BasicMatrix<T, R, C> result;
+  FOR_EACH_CELL(result(r, c) = lhs(r, c) * rhs);
+  return result;
+}
+
+template <typename T, uint32_t R, uint32_t C>
+BasicMatrix<T, R, C> operator*(T lhs, const BasicMatrix<T, R, C>& rhs)
+{ return rhs * lhs; }
 
 template <typename T, uint32_t R, uint32_t C>
 std::ostream& operator<<(std::ostream& ostr, const BasicMatrix<T, R, C>& matrix)
