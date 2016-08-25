@@ -18,8 +18,9 @@ public:
 
   void InitWindow();
   void CloseWindow();
-  void Redraw();
-  void Loop();
+  void Clear();
+  void Start();
+  void Stop();
 
   void SetForeground(Color color);
   void SetBackground(Color color);
@@ -50,6 +51,7 @@ public:
 
 protected:
   virtual void ButtonPressed(int x, int y) = 0;
+  virtual void KeyPressed(char c) = 0;
 
 private:
   const size_t m_width;
@@ -58,6 +60,7 @@ private:
   int m_screen;
   Window m_window;
   GC m_gc;
+  bool m_asked_to_stop;
 };
 
 }  // namespace ge

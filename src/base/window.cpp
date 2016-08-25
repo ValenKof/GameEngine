@@ -12,6 +12,7 @@ namespace ge {
 XWindow::XWindow(size_t width, size_t height)
   : m_width(width)
   , m_height(height)
+  , m_asked_to_stop(false)
 { InitWindow(); }
 
 XWindow::~XWindow()
@@ -61,16 +62,16 @@ void XWindow::CloseWindow()
   XCloseDisplay(m_pDisplay);
 }
 
-void XWindow::Redraw()
+void XWindow::Clear()
 { XClearWindow(m_pDisplay, m_window); }
 
-void XWindow::Loop()
+void XWindow::Start()
 {
   XEvent event; // the XEvent declaration !!!
   KeySym key; // a dealie-bob to handle KeyPress Events
   char text[255]; // a char buffer for KeyPress Events
   /* look for events forever... */
-  while (true) {
+  while (!m_asked_to_stop) {
     /* get the next event and stuff it into our event variable.
        Note:  only events we set the mask for are detected!
     */
@@ -78,24 +79,23 @@ void XWindow::Loop()
 
     if (event.type == Expose && event.xexpose.count == 0) {
       /* the window was exposed redraw it! */
-      Redraw();
+      Clear();
     }
     if (event.type == KeyPress && XLookupString(&event.xkey, text, sizeof(text), &key, 0) == 1) {
-      /* use the XLookupString routine to convert the invent
-         KeyPress data into regular text.  Weird but necessary...
-      */
-      if (text[0] == 'q') {
-        break;
-      }
-      printf("You pressed the %c key!\n", text[0]);
+      std::cout << "KeyPressed: " << text[0] << std::endl;
+      KeyPressed(text[0]);
     }
     if (event.type == ButtonPress) {
       int x = event.xbutton.x;
       int y = event.xbutton.y;
+      std::cout << "ButtonPressed: " << x << " " << y << std::endl;
       ButtonPressed(x, y);
     }
   }
 }
+
+void XWindow::Stop()
+{ m_asked_to_stop = true; }
 
 void XWindow::SetForeground(Color color)
 { XSetForeground(m_pDisplay, m_gc, color.Rgb()); }

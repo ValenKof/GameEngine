@@ -40,6 +40,9 @@ struct BasicTransformation {
     return result;
   }
 
+  static BasicMatrix<T> Identity()
+  { return BasicIdentity<T>(); }
+
   static BasicMatrix<T> RotateAboutX(T angle)
   { return impl::RotateImpl(angle, 1, 2); }
 

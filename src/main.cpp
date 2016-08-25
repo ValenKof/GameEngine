@@ -16,38 +16,51 @@ using namespace ge;
 
 class MyGame : public XWindow {
 public:
-  MyGame() : XWindow(800, 600), m_index(0)
+  MyGame() : XWindow(800, 600)
   {
-    cube_.LoadTxt("../meshes/cube.txt");
-    cube_.Transform(Transformation::Scale(100));
+    m_cube.LoadTxt("../meshes/cube.txt");
+    m_cube_to_world = Transformation::Scale(100);
+    m_cube_inside_world = Transformation::Identity();
   }
 
 protected:
   void ButtonPressed(int x, int y) override
   {
-    m_xs[m_index] = x;
-    m_ys[m_index] = y;
-    m_index = (m_index + 1) % 3;
-    if (m_index == 0) {
-      FillPolygon(m_xs[0], m_ys[0], m_xs[1], m_ys[1], m_xs[2], m_ys[2]);
-    }
+    m_cube_inside_world = Transformation::Translate(x, y, 0);
+    DrawCube();
+  }
 
-    DrawMesh(cube_);
+  void KeyPressed(char c) override
+  {
+    if (c == 'q') {
+      Stop();
+    }
+    int dx = (c == 'a' ? -1 : (c == 'd' ? +1 : 0));
+    int dy = (c == 's' ? -1 : (c == 'w' ? +1 : 0));
+    m_cube_inside_world = m_cube_inside_world * Transformation::Translate(dx, dy, 0);
+    DrawCube();
   }
 
 private:
-  size_t m_index;
-  std::array<int, 3> m_xs;
-  std::array<int, 3> m_ys;
-  Mesh cube_;
+  void DrawCube()
+  {
+    Clear();
+    DrawMesh(m_cube.Transformed(m_cube_to_world * m_cube_inside_world));
+  }
+
+  Mesh m_cube;
+  Matrix m_cube_to_world;
+  Matrix m_cube_inside_world;
 };
 
-void RunMainLoop() {
+void RunMainLoop()
+{
   MyGame game;
-  game.Loop();
+  game.Start();
 }
 
-int main() {
+int main()
+{
   std::thread event_thread(RunMainLoop);
   event_thread.join();
 

@@ -50,6 +50,13 @@ public:
     }
   }
 
+  BasicMesh Transformed(BasicMatrix<T> transformation)
+  {
+    BasicMesh<T> result(*this);
+    result.Transform(transformation);
+    return result;
+  }
+
   std::array<BasicPoint3D<T>, 3> GetPolygon(size_t index) const
   {
     const auto& polygon = m_polygons[index];
