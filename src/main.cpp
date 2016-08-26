@@ -6,6 +6,7 @@
 #include <base/point.h>
 #include <base/transformation.h>
 #include <base/mesh.h>
+#include <base/camera.h>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
@@ -16,36 +17,36 @@ using namespace ge;
 
 class MyGame : public XWindow {
 public:
-  MyGame() : XWindow(800, 600)
+  MyGame()
+    : XWindow(800, 600)
+    , m_camera(Point3D(0, 0, 0), Vector3D(1, 0, 0), Vector3D(0, 0, 1))
   {
     m_cube.LoadTxt("../meshes/cube.txt");
 
-    m_transform_in_model = Transformation::Scale(100);
+    m_cube_location = Point3D(50, 0, 0);
+    m_transform_in_model = Transformation::Scale(1);
     m_model_to_world = Transformation::Identity();
-    m_current_transform_in_world = Transformation::Identity();
-    m_next_transform_in_world = Transformation::Identity();
+    m_transform_in_world = Transformation::Translate(m_cube_location - Point3D(0, 0, 0));
   }
 
 protected:
   void Render(float t) override
   {
-    Matrix transform_in_world = m_current_transform_in_world +
-        (m_next_transform_in_world - m_current_transform_in_world) * t;
-    Matrix result = m_transform_in_model * m_model_to_world * transform_in_world;
+    Matrix result = m_transform_in_model * m_model_to_world * m_transform_in_world;
     Clear();
-    Mesh cube_in_camera = m_cube.Transformed(result);
-    DrawMesh(cube_in_camera);
+    Mesh cube_in_camera = m_cube.Transformed(result * m_camera.WorldToCamera());
+    //std::cout << "CubeInCamera: " << cube_in_camera.GetPolygon(0)[0] << std::endl;
+    DrawMesh(cube_in_camera, m_camera);
   }
 
   void Update() override
   {
-    m_current_transform_in_world = m_next_transform_in_world;
   }
 
   void ButtonPressed(int x, int y) override
   {
-    m_current_transform_in_world = Transformation::Translate(x, y, 0);
-    m_next_transform_in_world = Transformation::Translate(x, y, 0);
+    //m_current_transform_in_world = Transformation::Translate(x, y, 0);
+    //m_next_transform_in_world = Transformation::Translate(x, y, 0);
   }
 
   void KeyPressed(char c) override
@@ -54,22 +55,39 @@ protected:
       Stop();
     }
 
-    int dx = (c == 'a' ? -10 : (c == 'd' ? +10 : 0));
-    int dy = (c == 's' ? -10 : (c == 'w' ? +10 : 0));
-    m_next_transform_in_world =
-        m_current_transform_in_world * Transformation::Translate(dx, dy, 0);
+    if (c == 'w') {
+      m_camera = m_camera.TranslateLocation(m_camera.Direction());
+    }
+    if (c == 's') {
+      m_camera = m_camera.TranslateLocation(-m_camera.Direction());
+    }
+    if (c == 'd') {
+      m_camera = m_camera.TurnRight(0.01);
+    }
+    if (c == 'a') {
+      m_camera = m_camera.TurnLeft(0.01);
+    }
+    //    int dx = (c == 'a' ? -1 : (c == 'd' ? +1 : 0));
+//    int dy = (c == 's' ? -1 : (c == 'w' ? +1 : 0));
+//    std::cout << "WorldToCamera: " << m_camera.WorldToCamera() << std::endl;
 
     double angle = (c == 'r' ? 1.0 : 0.0);
     m_transform_in_model = m_transform_in_model * Transformation::Rotate(angle, angle, angle);
+
+    std::cout << "Camera.Location: " << m_camera.Location() << std::endl;
+    std::cout << "Camera.Direction: " << m_camera.Direction() << std::endl;
+    std::cout << "Camera.Right: " << m_camera.Right() << std::endl;
+    std::cout << "Camera.Up: " << m_camera.Up() << std::endl;
+    std::cout << "Cube.Location: " << m_cube_location << std::endl;
   }
 
 private:
   Mesh m_cube;
-
+  Point3D m_cube_location;
   Matrix m_transform_in_model;
   Matrix m_model_to_world;
-  Matrix m_current_transform_in_world;
-  Matrix m_next_transform_in_world;
+  Matrix m_transform_in_world;
+  Camera m_camera;
 };
 
 void RunMainLoop()

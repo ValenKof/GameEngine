@@ -4,6 +4,7 @@
 #pragma once
 #include <base/color.h>
 #include <base/mesh.h>
+#include <base/camera.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
@@ -44,18 +45,27 @@ public:
     FillPolygon(
         static_cast<int>(polygon[0].x), static_cast<int>(polygon[0].y),
         static_cast<int>(polygon[1].x), static_cast<int>(polygon[1].y),
-        static_cast<int>(polygon[2].x), static_cast<int>(polygon[2].y)
-    );
+        static_cast<int>(polygon[2].x), static_cast<int>(polygon[2].y));
   }
 
   template <typename T>
-  void DrawMesh(const BasicMesh<T>& mesh)
+  void DrawMesh(const BasicMesh<T>& mesh_in_camera, const Camera& camera)
   {
+    auto calc_x = [this](double x)
+    { return static_cast<int>((x + 1) * m_width / 2); };
+    auto calc_y = [this](double y)
+    { return static_cast<int>((y + 1) * m_height / 2); };
+
+    BasicMesh<T> mesh_in_projection = mesh_in_camera.Transformed(camera.CameraToProjection());
     srand(0);
-    for (size_t i = 0; i < mesh.PolygonsNumber(); ++i) {
+    for (size_t i = 0; i < mesh_in_camera.PolygonsNumber(); ++i) {
       SetForeground(Color::Random());
-      if (mesh.IsVisible(i)) {
-        FillPolygon(mesh.GetPolygon(i));
+      if (mesh_in_camera.IsVisible(i)) {
+        auto polygon = mesh_in_projection.GetPolygon(i);
+        FillPolygon(
+            calc_x(polygon[0].x), calc_y(polygon[0].y),
+            calc_x(polygon[1].x), calc_y(polygon[1].y),
+            calc_x(polygon[2].x), calc_y(polygon[2].y));
       }
     }
   }

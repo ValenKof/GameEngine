@@ -50,7 +50,7 @@ public:
     }
   }
 
-  BasicMesh Transformed(BasicMatrix<T> transformation)
+  BasicMesh Transformed(BasicMatrix<T> transformation) const
   {
     BasicMesh<T> result(*this);
     result.Transform(transformation);

@@ -71,6 +71,15 @@ struct BasicVector3D {
   static BasicVector3D FromRowVector(BasicRow<T> row)
   { return {row(0, 0), row(0, 1), row(0, 2)}; }
 
+  BasicVector3D operator-() const
+  { return {-x, -y, -z}; }
+
+  BasicVector3D Normalized() const
+  {
+    T length = Length();
+    return {x / length, y / length, z / length};
+  }
+
 //  BasicColumn<T> ToColumnVector() const
 //  { return ToRowVector().Transposed(); }
 
@@ -104,5 +113,13 @@ inline BasicVector3D<T> operator+(const BasicVector3D<T>& a, const BasicVector3D
 template <typename T>
 inline BasicVector3D<T> operator-(const BasicVector3D<T>& a, const BasicVector3D<T>& b)
 { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+
+template <typename T>
+inline BasicVector3D<T> operator*(const BasicVector3D<T>& a, T b)
+{ return {a.x * b, a.y * b, a.z * b}; }
+
+template <typename T>
+inline BasicVector3D<T> operator*(T a, const BasicVector3D<T>& b)
+{ return b * a; }
 
 }  // namespace ge

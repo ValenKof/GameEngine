@@ -1,5 +1,6 @@
 #pragma once
 #include <base/matrix.h>
+#include <base/point.h>
 
 namespace ge {
 namespace impl {
@@ -29,6 +30,9 @@ struct BasicTransformation {
     result(3, 2) = dz;
     return result;
   }
+
+  static BasicMatrix<T> Translate(BasicVector3D<T> v)
+  { return Translate(v.x, v.y, v.z); }
 
   static BasicMatrix<T> Scale(T f)
   {
