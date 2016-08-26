@@ -9,26 +9,16 @@
 
 namespace ge {
 
+template <typename BasicVector3D>
+struct BasicVector3D;
+
 template <typename T>
 struct BasicPoint3D {
-  BasicPoint3D() {}
-  BasicPoint3D(T x, T y, T z) : x(x), y(y), z(z) {}
-
-  BasicRow<T> ToRowVector() const
-  {
-    BasicRow<T> result;
-    result(0, 0) = x;
-    result(0, 1) = y;
-    result(0, 2) = z;
-    result(0, 3) = static_cast<T>(1);
-    return result;
-  }
-
-  static BasicPoint3D FromRowVector(BasicRow<T> row)
-  { return {row(0, 0) / row(0, 3), row(0, 1) / row(0, 3), row(0, 2) / row(0, 3)}; }
-
-//  BasicColumn<T> ToColumnVector() const
-//  { return ToRowVector().Transposed(); }
+  BasicPoint3D();
+  BasicPoint3D(T x, T y, T z);
+  BasicRow<T> ToRowVector() const;
+  static BasicPoint3D FromRowVector(BasicRow<T> row);
+  BasicVector3D<T> ToRadiusVector() const;
 
   T x;
   T y;
@@ -79,9 +69,6 @@ struct BasicVector3D {
     T length = Length();
     return {x / length, y / length, z / length};
   }
-
-//  BasicColumn<T> ToColumnVector() const
-//  { return ToRowVector().Transposed(); }
 
   T x;
   T y;

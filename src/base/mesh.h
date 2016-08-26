@@ -34,7 +34,7 @@ public:
     for (const auto& polygon : m_polygons) {
       auto p = m_points[polygon[1]] - m_points[polygon[0]];
       auto q = m_points[polygon[2]] - m_points[polygon[0]];
-      m_normals.push_back(q.CrossProduct(p));
+      m_normals.push_back(q.CrossProduct(p).Normalized());
     }
   }
 
@@ -64,7 +64,13 @@ public:
   }
 
   bool IsVisible(size_t index) const
-  { return m_normals[index].z > 0; }
+  {
+    auto p = GetPolygon(index);
+    auto n = m_normals[index];
+    return p[0].ToRadiusVector().DotProduct(n) <= 0 &&
+      p[1].ToRadiusVector().DotProduct(n) <= 0 &&
+      p[2].ToRadiusVector().DotProduct(n) <= 0;
+  }
 
   size_t PolygonsNumber() const
   { return m_polygons.size(); }

@@ -50,7 +50,7 @@ public:
   { return m_location; }
 
   Matrix WorldToCamera() const
-  { return m_world_to_camera * m_clip; }
+  { return m_world_to_camera; }
 
   Matrix CameraToProjection() const
   { return m_clip; }
