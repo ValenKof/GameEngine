@@ -7,6 +7,7 @@
 #include <base/transformation.h>
 #include <base/mesh.h>
 #include <base/camera.h>
+#include <base/texture.h>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
