@@ -8,6 +8,7 @@
 #include <base/mesh.h>
 #include <base/camera.h>
 #include <base/texture.h>
+#include <lodepng/png.h>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
@@ -23,7 +24,7 @@ public:
     , m_camera(Point3D(0, 0, 0), Vector3D(1, 0, 0), Vector3D(0, 0, 1))
   {
     m_cube.LoadTxt("../meshes/cube.txt");
-
+    m_texture.LoadPng("../textures/ladybug_64.png");
     m_cube_location = Point3D(50, 0, 0);
     m_transform_in_model = Transformation::Scale(1);
     m_model_to_world = Transformation::Identity();
@@ -35,6 +36,14 @@ protected:
   {
     Matrix result = m_transform_in_model * m_model_to_world * m_transform_in_world;
     Clear();
+
+    for (uint32_t y = 0; y < m_texture.Height(); ++y) {
+      for (uint32_t x = 0; x < m_texture.Width(); ++x) {
+        SetForeground(m_texture.GetPixel(y, x));
+        DrawPoint(x, y);
+      }
+    }
+
     Mesh cube_in_camera = m_cube.Transformed(result * m_camera.WorldToCamera());
     //std::cout << "CubeInCamera: " << cube_in_camera.GetPolygon(0)[0] << std::endl;
     DrawMesh(cube_in_camera, m_camera);
@@ -84,6 +93,7 @@ protected:
 
 private:
   Mesh m_cube;
+  Image m_texture;
   Point3D m_cube_location;
   Matrix m_transform_in_model;
   Matrix m_model_to_world;
