@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <fstream>
+#include <sstream>
 
 namespace ge {
 
@@ -30,12 +31,51 @@ public:
       in >> polygon[0] >> polygon[1] >> polygon[2];
     }
 
-    m_normals.resize(0);
-    for (const auto& polygon : m_polygons) {
-      auto p = m_points[polygon[1]] - m_points[polygon[0]];
-      auto q = m_points[polygon[2]] - m_points[polygon[0]];
-      m_normals.push_back(q.CrossProduct(p).Normalized());
+    FillNormals();
+  }
+
+  void LoadObj(const std::string& path)
+  {
+    std::ifstream in(path);
+
+    m_points.clear();
+    m_polygons.clear();
+
+    std::vector<std::array<int32_t, 3>> obj_polygons;
+
+    std::string line;
+    while (std::getline(in, line)) {
+      std::stringstream sstr(line);
+      std::string token;
+      sstr >> token;
+      if (token == "#") {
+        continue;
+      } else if (token == "v") {
+        float x, y, z;
+        sstr >> x >> y >> z;
+        m_points.emplace_back(x, y, z);
+      } else if (token == "f") {
+        std::array<int32_t, 3> polygon;
+        for (size_t i = 0; i < 3; ++i) {
+          sstr >> token;
+          std::replace(token.begin(), token.end(), '/', ' ');
+          std::stringstream indices(token);
+          indices >> polygon[i];
+        }
+        std::swap(polygon[1], polygon[2]);
+        obj_polygons.push_back(polygon);
+      }
     }
+
+    int32_t sz = static_cast<int32_t>(m_points.size());
+    auto normalize = [=](int32_t index) {
+      return static_cast<uint16_t>((sz + index) % sz);
+    };
+    for (const auto& p : obj_polygons) {
+      m_polygons.push_back({{ normalize(p[0]), normalize(p[1]), normalize(p[2]) }});
+    }
+
+    FillNormals();
   }
 
   void Transform(BasicMatrix<T> transformation)
@@ -76,6 +116,16 @@ public:
   { return m_polygons.size(); }
 
 private:
+  void FillNormals() {
+    auto normal = [this](const auto& polygon) {
+      auto p = m_points[polygon[1]] - m_points[polygon[0]];
+      auto q = m_points[polygon[2]] - m_points[polygon[0]];
+      return q.CrossProduct(p).Normalized();
+    };
+    m_normals.resize(m_polygons.size());
+    std::transform(m_polygons.begin(), m_polygons.end(), m_normals.begin(), normal);
+  }
+
   std::vector<BasicPoint3D<T>> m_points;
   std::vector<std::array<uint16_t, 3>> m_polygons;
   std::vector<BasicVector3D<T>> m_normals;

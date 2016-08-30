@@ -23,7 +23,7 @@ public:
     : XWindow(800, 600)
     , m_camera(Point3D(0, 0, 0), Vector3D(1, 0, 0), Vector3D(0, 0, 1))
   {
-    m_cube.LoadTxt("../meshes/cube.txt");
+    m_cube.LoadObj("../meshes/wolf.obj");
     m_texture.LoadPng("../textures/ladybug_64.png");
     m_cube_location = Point3D(50, 0, 0);
     m_transform_in_model = Transformation::Scale(1);
