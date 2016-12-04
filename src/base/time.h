@@ -1,6 +1,4 @@
-//
 // Created by Valentin Kofman on 25/08/16.
-//
 #pragma once
 #include "x86intrin.h"
 

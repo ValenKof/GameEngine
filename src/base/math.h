@@ -1,3 +1,4 @@
+// Created by Valentin Kofman on 08/08/16.
 #pragma once
 
 namespace ge {

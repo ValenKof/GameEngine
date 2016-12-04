@@ -1,10 +1,8 @@
-//
 // Created by Valentin Kofman on 05/08/16.
-//
 #pragma once
-#include <base/color.h>
-#include <base/mesh.h>
-#include <base/camera.h>
+#include "base/color.h"
+#include "base/mesh.h"
+#include "base/camera.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xos.h>

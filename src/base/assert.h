@@ -1,6 +1,4 @@
-//
 // Created by Valentin Kofman on 05/08/16.
-//
 #pragma once
 #include <stdexcept>
 

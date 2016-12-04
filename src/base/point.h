@@ -1,6 +1,4 @@
-//
 // Created by Valentin Kofman on 08/08/16.
-//
 #pragma once
 #include <base/math.h>
 #include <base/matrix.h>

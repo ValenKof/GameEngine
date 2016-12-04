@@ -1,9 +1,7 @@
-//
 // Created by Valentin Kofman on 05/08/16.
-//
-#include <base/window.h>
-#include <base/color.h>
-#include <base/time.h>
+#include "window.h"
+#include "base/color.h"
+#include "base/time.h"
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>

@@ -1,10 +1,8 @@
-//
 // Created by Valentin Kofman on 26/08/16.
-//
 #pragma once
-#include <base/matrix.h>
-#include <base/point.h>
-#include <base/transformation.h>
+#include "base/matrix.h"
+#include "base/point.h"
+#include "base/transformation.h"
 #include <cmath>
 
 namespace ge {

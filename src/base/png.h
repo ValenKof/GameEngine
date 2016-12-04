@@ -1,32 +1,17 @@
+// Created by Valentin Kofman on 05/12/16.
 #pragma once
-#include <lodepng/lodepng.h>
-#include <base/color.h>
+#include "base/color.h"
 #include <cstdint>
-#include <iostream>
+#include <vector>
 
 namespace ge {
 
 class Image {
 public:
   Image()
-  {
-  }
+  { }
 
-  void LoadPng(const std::string& path)
-  {
-    std::vector<unsigned char> png;
-    auto error = lodepng::load_file(png, path);
-    if (!error) {
-      error = lodepng::decode(m_data, m_width, m_height, png);
-    }
-    if (error) {
-      std::cerr << "decoder error: " << error
-        << " text" << lodepng_error_text(error) << std::endl;
-      exit(0);
-    } else {
-      std::cout << "image loaded " << m_width << 'x' << m_height << std::endl;
-    }
-  }
+  void LoadPng(const std::string& path);
 
   uint8_t Red(uint32_t row, uint32_t column) const
   { return GetByte(row, column, 0); }
