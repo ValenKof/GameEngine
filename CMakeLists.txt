@@ -4,7 +4,9 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 include_directories(/opt/X11/include)
 include_directories(include)
-include_directories(src) # TODO make lodepng lib, remove src from includes
+include_directories(lib)
+
+add_subdirectory(lib/lodepng)
 
 link_directories(/opt/X11/lib)
 
@@ -17,3 +19,4 @@ add_executable(main ${SOURCES})
 target_link_libraries(main m)
 target_link_libraries(main pthread)
 target_link_libraries(main X11)
+target_link_libraries(main lodepng)
