@@ -1,5 +1,5 @@
 // Created by Valentin Kofman on 30/08/16.
-#include "point.h"
+#include "ge/base/point.h"
 
 namespace ge {
 

@@ -1,12 +1,12 @@
 // Created by Valentin Kofman on 05/08/16.
-#include "base/window.h"
-#include "base/matrix.h"
-#include "base/point.h"
-#include "base/transformation.h"
-#include "base/mesh.h"
-#include "base/camera.h"
-#include "base/texture.h"
-#include "base/png.h"
+#include "ge/base/window.h"
+#include "ge/base/matrix.h"
+#include "ge/base/point.h"
+#include "ge/base/transformation.h"
+#include "ge/base/mesh.h"
+#include "ge/base/camera.h"
+#include "ge/base/texture.h"
+#include "ge/base/png.h"
 #include <cstdio>
 #include <cstdlib>
 #include <thread>

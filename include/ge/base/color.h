@@ -16,17 +16,12 @@ public:
   static constexpr Color YELLOW()  { return FromRgb(0xFF, 0xFF, 0x00); }
   static constexpr Color WHITE()   { return FromRgb(0xFF, 0xFF, 0xFF); }
 
-  static constexpr Color FromRgb(uint8_t r, uint8_t g, uint8_t b) {
-    return FromRgb((uint32_t{r} << 16) | (uint32_t{g} << 8) | (uint32_t{b} << 0));
-  }
+  static constexpr Color FromRgb(uint8_t r, uint8_t g, uint8_t b)
+  { return Color{(uint32_t{r} << 16) | (uint32_t{g} << 8) | (uint32_t{b} << 0)}; }
 
-  static constexpr Color FromRgb(uint32_t rgb) {
-    return Color{rgb};
-  }
 
-  static Color Random() {
-    return FromRgb(rand() & 0xFF, rand() & 0xFF, rand() & 0xFF);
-  }
+  static Color Random()
+  { return FromRgb(rand() & 0xFF, rand() & 0xFF, rand() & 0xFF); }
 
   constexpr uint32_t Rgb() const { return m_rgb; }
   constexpr uint8_t R() const { return static_cast<uint8_t>((m_rgb >> 16) & 0xFF); }
@@ -34,8 +29,7 @@ public:
   constexpr uint8_t B() const { return static_cast<uint8_t>((m_rgb >>  0) & 0xFF); }
 
 private:
-  explicit constexpr Color(uint32_t rgb) : m_rgb(rgb) {
-  }
+  explicit constexpr Color(uint32_t rgb): m_rgb(rgb) {}
 
   uint32_t m_rgb;
 };

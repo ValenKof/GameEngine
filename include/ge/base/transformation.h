@@ -1,7 +1,7 @@
 // Created by Valentin Kofman on 15/08/16.
 #pragma once
-#include "base/matrix.h"
-#include "base/point.h"
+#include "ge/base/matrix.h"
+#include "ge/base/point.h"
 
 namespace ge {
 namespace impl {

@@ -1,7 +1,7 @@
 // Created by Valentin Kofman on 05/08/16.
-#include "window.h"
-#include "base/color.h"
-#include "base/time.h"
+#include "ge/base/window.h"
+#include "ge/base/color.h"
+#include "ge/base/time.h"
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>

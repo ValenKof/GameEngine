@@ -1,7 +1,7 @@
 // Created by Valentin Kofman on 05/08/16.
 #pragma once
-#include "base/assert.h"
-#include "base/math.h"
+#include "ge/base/assert.h"
+#include "ge/base/math.h"
 #include <array>
 #include <iostream>
 #include <cmath>
@@ -21,7 +21,7 @@ namespace ge {
 template <typename T, uint32_t R, uint32_t C>
 struct BasicMatrix;
 
-template <typename T, uint32_t N>
+template <typename T, uint32_t N = 4>
 BasicMatrix<T, N, N> BasicIdentity();
 
 template <typename T, uint32_t R = 4, uint32_t C = 4>

@@ -1,5 +1,5 @@
 // Created by Valentin Kofman on 05/12/16.
-#include "png.h"
+#include "ge/base/png.h"
 #include <lodepng/lodepng.h>
 #include <iostream>
 

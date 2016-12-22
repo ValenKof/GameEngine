@@ -1,6 +1,6 @@
 // Created by Valentin Kofman on 30/08/16.
 #pragma once
-#include "base/matrix.h"
+#include "ge/base/matrix.h"
 #include <array>
 
 namespace ge {

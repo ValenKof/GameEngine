@@ -1,13 +1,13 @@
 // Created by Valentin Kofman on 08/08/16.
 #pragma once
-#include <base/math.h>
-#include <base/matrix.h>
+#include "ge/base/math.h"
+#include "ge/base/matrix.h"
 #include <iostream>
 #include <cmath>
 
 namespace ge {
 
-template <typename BasicVector3D>
+template <typename T>
 struct BasicVector3D;
 
 template <typename T>
